@@ -3,7 +3,7 @@ const router = new express.Router();
 const Device_Type = require("../models/DeviceTypesSchema")
 // const Parameter = require("../models/parameters")
 
-router.post("/device_types", async (req,res)=>{
+router.post("/addDeviceTypes", async (req,res)=>{
   // var count= await promise.then(result => {result+1})
   const device_types = new Device_Type({  
     device_desc : req.body.device_desc,
@@ -21,7 +21,7 @@ catch(err)
   }
 })
 
-router.get("/device_types",async(req,res)=>{
+router.get("/deviceTypes",async(req,res)=>{
    try{
        const device_typeData = await Device_Type.find({}, {_id:0}).sort({_id:-1});
        res.send(device_typeData);

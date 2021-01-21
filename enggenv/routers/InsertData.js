@@ -30,6 +30,10 @@ try {
   // res.send(device_Data);
   var data = req.body
   console.log(data);
+  var date = data.client_time;
+  var dateObject = new Date(date);
+  var client_time = {"client_time":dateObject} 
+  //console.log(client_time)
   //res.status(201).send(data);
   const db = MongoClient.connect(url, function(err, db) {
     useUnifiedTopology: true
@@ -37,7 +41,8 @@ try {
     var dbo = db.db("DeviceRecord");
     var myobj = []
     myobj.push(data)
-    dbo.collection(deviceID).insertOne({...data,"server_time": new Date},{safe:true},function(err, result) {
+    var device_name ={ "device_id" : deviceID}
+    dbo.collection(deviceID).insertOne({...device_name,...data,...client_time,"server_time": new Date},{safe:true},function(err, result) {
       if (err) throw err;
       //console.log(result);
       
@@ -118,7 +123,7 @@ router.get("/getData/:id",async(req,res)=>{
         useUnifiedTopology: true
         if (err) throw err;
         var dbo = db.db("DeviceRecord");
-        var data = dbo.collection(deviceSchema).find().toArray(function(err, result) {
+        var data = dbo.collection(deviceSchema).find({},{_id:0}).toArray(function(err, result) {
           if (err) throw err;
           //console.log(result);
           res.status(200).json(result)

@@ -191,7 +191,9 @@ router.post("/addDevice", async (req,res)=>{
               
             { 
               server_time: {type: Date,default: Date.now} ,
-              client_time : {type : Date }
+              client_time : {type : Date },
+              device_name : { type : String }
+              
             },
             {strict:false,versionKey:false}
             )
@@ -204,11 +206,17 @@ router.post("/addDevice", async (req,res)=>{
             clientTime ={"client_time":"0"}
             //var arr = add_device.pa
             var a =add_device.parameters
+            var id = add_device.device_id
+            
+            var device_name = {"device_name":id}
+            
             //console.log(a[0])
-            var d = Object.assign({}, a[0],clientTime)
+            var d = Object.assign({}, device_name, a[0],clientTime)
+            var dic = {...device_name, ...a[0],...clientTime}
+            console.log(dic)
             //console.log(d)
 
-            Mymodel.updateOne({}, d, (error) => {
+            Mymodel.updateOne({}, dic, (error) => {
            
             });
             
