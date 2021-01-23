@@ -21,15 +21,40 @@ try {
 
   
   deviceID =  req.params.id
-
- console.log(deviceID)
-    
-  // const device_Data = await deviceSchema.find();
-  
-  // console.log(device_Data)
-  // res.send(device_Data);
+  deviceType = deviceID.substring(0,3)
   var data = req.body
-  console.log(data);
+  //console.log(deviceType);
+  const deviceData = await Device_Info.find({device_id:deviceID},{_id:0})
+  const parameterData = await Parameter.find({device_name: deviceType})
+  
+  
+  var param = []
+  for(i = 0; i < parameterData.length; i++) {
+    var para1 = parameterData[i];
+   // console.log(para)
+   param.push(para1._doc.parameters)
+  // data.push(para1._doc.unit)
+  
+}
+
+
+//console.log(param)
+
+const intersection = param.filter(element => Object.keys(data).includes(element));
+//console.log(intersection)
+
+  if(deviceData.length == 0)
+  {
+    return res.status(404).json({message:"Device doesn't exist"})
+  }
+
+  else if (intersection.length == 0){
+    return res.status(404).json({message:"Provided parameter dosen't exists in db"})
+
+  }
+ else{
+
+ 
   var date = data.client_time;
   var dateObject = new Date(date);
   var client_time = {"client_time":dateObject} 
@@ -49,39 +74,12 @@ try {
       res.status(201).json(data)
 
       db.close();
+    
+
     });
   });
   
-
-
-// var mongo = MongoClient.connect(url, function(err, db) {
-   
-  //             useUnifiedTopology: true
-  //             // useCreateIndex:true,
-  //             // useNewUrlParser:true
-  //             // if (err) throw err;
-  //             //conn = "DeviceRecord"+"."+deviceSchema
-  //             //var dbo = db.db("DeviceRecord");
-  //             var data = mongo.collection(deviceSchema)           
-  //               console.log(data);
-                
-        
-            
-
-
-
-
- 
-
-// router.post("/students",(req,res)=>{
-  //         console.log(req.body);
-  //         const user = new Student(req.body)
-  //         user.save().then(()=>{
-  //             res.send("Transfered");                 
-  //         }).catch((e)=> {
-  //             res.send(e);
-  //         })
-  //     })
+}
 
 
   // console.log(deviceSchema)
@@ -115,10 +113,18 @@ catch(err)
 router.get("/getData/:id",async(req,res)=>{
   try{
       deviceSchema  =  req.params.id
-      // const device_Data = await deviceSchema.find();
-      
-      // console.log(device_Data)
-      // res.send(device_Data);
+      const deviceData = await Device_Info.find({device_id:deviceSchema},{_id:0})
+      //console.log(deviceData)
+    
+      if(deviceData.length == 0)
+      {
+        return res.status(404).json({message:"Device doesn't exist"})
+      }
+
+      else 
+      {
+
+
       const db = MongoClient.connect(url, function(err, db) {
         useUnifiedTopology: true
         if (err) throw err;
@@ -130,11 +136,9 @@ router.get("/getData/:id",async(req,res)=>{
           db.close();
         });
       });
-      
-
-
   }
   
+}
   
   catch(e){
       res.send(e);

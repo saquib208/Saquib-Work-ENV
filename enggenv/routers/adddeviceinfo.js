@@ -19,7 +19,7 @@ router.post("/addDevice", async (req,res)=>{
 
       
       const param_body = Object.keys(req.body.parameters)
-      console.log(param_body)
+      //console.log(param_body)
       const device_name = req.body.device_name
       // const param = await Parameter.find({device_name:req.body.device_name},{unit:0,device_name:0,Date:0,_id:0})
         //console.log(param.length)
@@ -32,10 +32,10 @@ router.post("/addDevice", async (req,res)=>{
     
         
         // console.log(typeof subset)
-        console.log(result)
-        console.log(param_body)
-        console.log(typeof(result))
-        console.log(typeof(param_body))
+        // console.log(result)
+        // console.log(param_body)
+        // console.log(typeof(result))
+        // console.log(typeof(param_body))
             
         function checkSubset(p1,p2){
           
@@ -49,17 +49,18 @@ router.post("/addDevice", async (req,res)=>{
             return false
           }
         }
-        console.log(checkSubset(result,param_body))
+        // console.log(checkSubset(result,param_body))
         
       
         if(!adddeviceData )
         {
-          return res.status(404).json({message:"Device doesn't exist"})
+          return res.status(404).json({message:"Device name doesn't exist,Please add device in db, before device registration"})
         }
 
         else if(!checkSubset(result,param_body))
         {
-          return res.status(404).json({message:"Please add parameters in the db before device registration"})
+          return res.status(404).json({message:"Please add parameter in the db before device registration",
+                                      hint:"provide exact parameter name in the key value form {'parameter':'default value'}"})
           
         }
         // else if(checksubset(result,param_body)=='false')
@@ -102,74 +103,6 @@ router.post("/addDevice", async (req,res)=>{
               "parameters" : add_device.parameters
             })
             
-            
-            // const arr = add_device.parameters
-            // console.log(arr[0])
-            // const device_param = arr.reduce((acc,curr)=> (acc[curr]={type:Object},acc),{});
-            // console.log(device_param)
-
-            
-            // MongoClient.connect(url, function(err, db) {
-            //   useUnifiedTopology: true
-            //   // useCreateIndex:true,
-            //   // useNewUrlParser:true
-            //   // if (err) throw err;
-            //   var dbo = db.db("DeviceRecord");
-              
-            //   dbo.createCollection(add_device.device_id, function(err, res) {
-            //     if (err) throw err;
-            //     console.log("Collection created!");
-            //     db.close();
-            //     // res.send("OK")
-            //   });
-            //   res.send("OK")
-            // });
-            // MongoClient.connect(url, function(err, db) {
-            //   if (err) throw err;
-            //   var dbo = db.db("DeviceRecord");
-            //   // var myobj = { name: "Company Inc", address: "Highway 37" };
-            //   const insertDataSchema = new mongoose.Schema(
-            //     {client_time : {type: Date},
-            //     server_time :  { type : Date, default: Date.now }
-            //     // parameters:
-            //     //     {type:String,
-            //     //     required:true,
-            //     //     //  unique:true
-            //     // },
-            //     // unit:
-            //     //     {type:String,
-            //     //     required:true,
-            //     //     // unique:true
-            //     // },
-            
-            //     },{strict:false,versionKey:false});
-                
-            
-            // const deviceData = new mongoose.model('GWR00004',insertDataSchema);
-
-            //   dbo.collection(add_device.device_id).insertOne(myobj, function(err, res) {
-            //     if (err) throw err;
-            //     console.log("1 document inserted");
-            //     db.close();
-            //   });
-            // });
-
-
-          //   function dynamicSchema(name){
-          //     var deviceSchema = new mongoose.Schema( { 
-          //       server_time: {type: Date,default: Date.now} ,
-          //       client_time : {type : Date },
-                
-          //     },
-              
-                
-          //     {strict:true,versionKey:false});
-          //     return mongoose.model(add_device.device_id,deviceSchema,add_device.device_id )
-          // }
-          
-          //console.log(dynamicSchema(add_device.device_id))
-          //module.exports = dynamicSchema;
-
 
 
 
@@ -213,7 +146,7 @@ router.post("/addDevice", async (req,res)=>{
             //console.log(a[0])
             var d = Object.assign({}, device_name, a[0],clientTime)
             var dic = {...device_name, ...a[0],...clientTime}
-            console.log(dic)
+            //console.log(dic)
             //console.log(d)
 
             Mymodel.updateOne({}, dic, (error) => {
@@ -249,22 +182,27 @@ router.post("/addDevice", async (req,res)=>{
       }
      })
 
-// router.post("/Device_Infos",(req,res)=>{
-//     console.log(req.body);
-//     const user = new Device_Info(req.body)
-//     user.save().then(()=>{
-//         res.send("Transfered");                 
-//     }).catch((e)=> {
-//         res.send(e);
-//     })
-// })
+
+
 router.get("/getDeviceInfo/:device_id", async(req,res) => {
-    try{
+    try{   
+
         const dev_id = req.params.device_id;
-//        
         const deviceData = await Device_Info.find({device_id:dev_id},{_id:0})
-        console.log(typeof deviceData);
+        //const paramData = await Device_Info.find({device_id:dev_id})
+        //console.log(deviceData)
+
+        if(deviceData.length == 0)
+        {
+          return res.status(404).json({message:"Device doesn't exist"})
+        }
+
+        else {
+        
+        //console.log(typeof deviceData);
         res.status(200).json(deviceData)
+
+        }
     }catch(e){
         res.send(e)
     }
